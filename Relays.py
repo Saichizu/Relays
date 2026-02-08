@@ -136,19 +136,19 @@ def get_elapsed_time(table_id: int) -> int:
 
 
 # ============================================================================
-# VISIBILITY FUNCTIONS - These have the bug that needs to be fixed
+# VISIBILITY FUNCTIONS - Fixed to use CSS class-based visibility
 # ============================================================================
 
 def hide_element(element):
-    """Hide a UI element using props (BROKEN - doesn't work reliably)."""
+    """Hide a UI element using CSS class."""
     if element:
-        element.props('style="display: none"')
+        element.classes(add='hidden')
 
 
 def show_element(element):
-    """Show a UI element using props (BROKEN - doesn't work reliably)."""
+    """Show a UI element using CSS class."""
     if element:
-        element.props('style="display: block"')
+        element.classes(remove='hidden')
 
 
 # ============================================================================
@@ -325,16 +325,16 @@ def build_table_card(table_id: int):
         
         # Button row
         with ui.row().classes('button-row'):
-            # NOTE: These buttons are created WITHOUT initial hidden state
-            # This is part of the bug - they all show initially
+            # Start and Open buttons visible by default (no hidden class)
             table['start_button'] = ui.button('Start Timer', 
                                               on_click=lambda t=table_id: start_timer(t))
             table['open_button'] = ui.button('Open', 
                                             on_click=lambda t=table_id: open_table(t))
+            # Finish and Close buttons hidden by default (have hidden class)
             table['finish_button'] = ui.button('Finish', 
-                                              on_click=lambda t=table_id: finish_timer(t))
+                                              on_click=lambda t=table_id: finish_timer(t)).classes('hidden')
             table['close_button'] = ui.button('Close', 
-                                             on_click=lambda t=table_id: close_table(t))
+                                             on_click=lambda t=table_id: close_table(t)).classes('hidden')
 
 
 def build_ui():
@@ -350,8 +350,9 @@ def build_ui():
                 tables[table_id] = init_table(table_id)
                 build_table_card(table_id)
         
-        # NOTE: refresh_ui() is NOT called here after building the UI
-        # This is part of the bug - initial state is not applied
+        # Apply initial UI state for all tables
+        for table_id in tables:
+            refresh_ui(table_id)
 
 
 # ============================================================================
