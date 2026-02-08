@@ -368,7 +368,7 @@ def main():
         title='Relays - Table Management',
         port=8080,
         reload=False,
-        show=False
+        show=False  # Don't auto-open browser (useful for deployment/testing)
     )
 
 
